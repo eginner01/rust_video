@@ -193,7 +193,7 @@ curl "http://localhost:8080/video/share/url/parse?url=https://v.douyin.com/xxxxx
 
 **请求示例**:
 ```bash
-curl "http://localhost:8080/video/id/parse?source=douyin&video_id=7424432820954598707"
+curl 'http://127.0.0.1:8080/video/share/url/parse?url=视频分享链接' | jq
 ```
 
 ### 3. 视频代理
