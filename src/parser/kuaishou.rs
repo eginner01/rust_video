@@ -12,7 +12,6 @@ impl VideoParser for KuaishouParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
         let client = create_http_client()?;
         
-        // 第一次请求获取重定向
         let response = client
             .get(share_url)
             .header("User-Agent", crate::utils::DEFAULT_USER_AGENT)
@@ -22,7 +21,6 @@ impl VideoParser for KuaishouParser {
         
         let final_url = response.url().to_string();
         
-        // 将 /fw/long-video/ 替换为 /fw/photo/
         let final_url = final_url.replace("/fw/long-video/", "/fw/photo/");
         
         // 获取页面内容
@@ -35,16 +33,13 @@ impl VideoParser for KuaishouParser {
             .text()
             .await?;
         
-        // 提取JSON数据
         let pattern = r"window\.INIT_STATE\s*=\s*(.*?)</script>";
         let json_str = extract_json_from_html(&html, pattern)?;
         
         let json: Value = serde_json::from_str(&json_str)?;
         
-        // 查找包含 result 和 photo 的数据
         let data = self.find_video_data(&json)?;
         
-        // 检查result状态
         let result_code = data.pointer("/result")
             .and_then(|v| v.as_i64())
             .ok_or_else(|| anyhow!("无法获取result字段"))?;
@@ -58,7 +53,6 @@ impl VideoParser for KuaishouParser {
 }
 
 impl KuaishouParser {
-    /// 从JSON中查找视频数据
     fn find_video_data(&self, json: &Value) -> Result<Value> {
         if let Some(obj) = json.as_object() {
             for (_, value) in obj {
@@ -73,7 +67,6 @@ impl KuaishouParser {
         Err(anyhow!("未找到视频数据"))
     }
     
-    /// 从JSON数据中提取视频信息
     fn extract_video_info(&self, data: &Value) -> Result<VideoParseInfo> {
         let photo = data.pointer("/photo")
             .ok_or_else(|| anyhow!("未找到photo字段"))?;
@@ -93,23 +86,19 @@ impl KuaishouParser {
                 .to_string(),
         };
         
-        // 提取标题
         info.title = photo.pointer("/caption")
             .and_then(|v| v.as_str())
             .unwrap_or("")
             .to_string();
         
-        // 提取视频URL
         info.video_url = photo.pointer("/mainMvUrls/0/url")
             .and_then(|v| v.as_str())
             .map(|s| s.to_string());
         
-        // 提取封面
         info.cover_url = photo.pointer("/coverUrls/0/url")
             .and_then(|v| v.as_str())
             .map(|s| s.to_string());
         
-        // 提取图集
         if let Some(cdn) = photo.pointer("/ext_params/atlas/cdn/0").and_then(|v| v.as_str()) {
             if let Some(list) = photo.pointer("/ext_params/atlas/list").and_then(|v| v.as_array()) {
                 for item in list {

@@ -1,22 +1,15 @@
 use serde::{Deserialize, Serialize};
 
-/// 作者信息
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Author {
-    /// 作者ID
     pub uid: String,
-    /// 作者名称
     pub name: String,
-    /// 作者头像URL
     pub avatar: String,
 }
 
-/// 图片信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImgInfo {
-    /// 图片URL
     pub url: String,
-    /// LivePhoto视频地址
     #[serde(skip_serializing_if = "Option::is_none")]
     pub live_photo_url: Option<String>,
 }
@@ -24,20 +17,14 @@ pub struct ImgInfo {
 /// 视频解析信息
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoParseInfo {
-    /// 作者信息
     pub author: Author,
-    /// 视频标题/描述
     pub title: String,
-    /// 视频播放地址（无水印）
     #[serde(skip_serializing_if = "Option::is_none")]
     pub video_url: Option<String>,
-    /// 音乐播放地址
     #[serde(skip_serializing_if = "Option::is_none")]
     pub music_url: Option<String>,
-    /// 视频封面地址
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cover_url: Option<String>,
-    /// 图集图片地址列表
     #[serde(default)]
     pub images: Vec<ImgInfo>,
 }
@@ -61,52 +48,29 @@ impl Default for VideoParseInfo {
     }
 }
 
-/// 视频平台来源
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum VideoSource {
-    /// 抖音
     DouYin,
-    /// 快手
     KuaiShou,
-    /// 皮皮虾
     PiPiXia,
-    /// 火山
     HuoShan,
-    /// 微博
     WeiBo,
-    /// 微视
     WeiShi,
-    /// 绿洲
     LvZhou,
-    /// 最右
     ZuiYou,
-    /// 度小视(原全民小视频)
     QuanMin,
-    /// 西瓜
     XiGua,
-    /// 梨视频
     LiShiPin,
-    /// 皮皮搞笑
     PiPiGaoXiao,
-    /// 虎牙
     HuYa,
-    /// AcFun
     AcFun,
-    /// 逗拍
     DouPai,
-    /// 美拍
     MeiPai,
-    /// 全民K歌
     QuanMinKGe,
-    /// 六间房
     SixRoom,
-    /// 新片场
     XinPianChang,
-    /// 好看视频
     HaoKan,
-    /// 小红书
     RedBook,
-    /// 哔哩哔哩
     BiliBili,
 }
 
@@ -139,8 +103,7 @@ impl VideoSource {
             _ => None,
         }
     }
-
-    /// 转换为字符串
+    
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::DouYin => "douyin",
@@ -167,8 +130,7 @@ impl VideoSource {
             Self::BiliBili => "bilibili",
         }
     }
-
-    /// 获取视频来源的中文名称
+    
     pub fn display_name(&self) -> &'static str {
         match self {
             Self::DouYin => "抖音",
@@ -195,8 +157,7 @@ impl VideoSource {
             Self::BiliBili => "哔哩哔哩",
         }
     }
-
-    /// 获取视频分享域名列表
+    
     pub fn share_url_domains(&self) -> Vec<&'static str> {
         match self {
             Self::DouYin => vec!["v.douyin.com", "www.iesdouyin.com", "www.douyin.com"],

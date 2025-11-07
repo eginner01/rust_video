@@ -24,22 +24,17 @@ struct Cli {
 enum Commands {
     /// 启动HTTP服务器
     Serve {
-        /// 监听端口
         #[arg(short, long, default_value = "8080")]
         port: u16,
     },
-    /// 解析视频分享URL
     Parse {
-        /// 视频分享URL或包含URL的文本
         url: String,
     },
-    /// 列出所有支持的平台
     Platforms,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // 初始化日志 - 使用更简洁的格式
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -60,19 +55,15 @@ async fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Some(Commands::Serve { port }) => {
-            // 启动HTTP服务器
             server::start_server(port).await?;
         }
         Some(Commands::Parse { url }) => {
-            // 解析视频
             parse_video(&url).await?;
         }
         Some(Commands::Platforms) => {
-            // 列出所有平台
             list_platforms();
         }
         None => {
-            // 默认启动HTTP服务器
             server::start_server(cli.port).await?;
         }
     }
@@ -115,8 +106,7 @@ async fn parse_video(url_text: &str) -> anyhow::Result<()> {
                     }
                 }
             }
-            
-            // 输出JSON格式
+
             println!("\n📋 JSON格式:");
             println!("{}", serde_json::to_string_pretty(&info)?);
         }
@@ -128,7 +118,6 @@ async fn parse_video(url_text: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// 列出所有支持的平台
 fn list_platforms() {
     use crate::parser::get_supported_platforms;
 

@@ -16,7 +16,6 @@ use std::time::Instant;
 use tower_http::cors::CorsLayer;
 use reqwest::Client;
 
-/// 自定义日志中间件
 async fn logger_middleware(
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
     method: Method,
@@ -44,7 +43,6 @@ async fn logger_middleware(
         format!("{}μs", duration.as_micros())
     };
     
-    // 打印简洁的日志
     println!(
         "[RUST] {} | {:>3} | {:>8} | {:>15} | {:<6} \"{}{}\"",
         chrono::Local::now().format("%Y/%m/%d - %H:%M:%S"),
@@ -59,14 +57,12 @@ async fn logger_middleware(
     response
 }
 
-/// 启动HTTP服务器
 pub async fn start_server(port: u16) -> anyhow::Result<()> {
     // 打印启动信息
     println!("\n╔══════════════════════════════════════════════════════════╗");
-    println!("║     🦀 Rust Video Parser v2.1.0                        ║");
+    println!("║     🦀 Rust Video Parser v2.1.0                         ║");
     println!("╚══════════════════════════════════════════════════════════╝\n");
     
-    // 打印路由信息
     println!("[RUST-debug] Registering routes:");
     println!("[RUST-debug] GET    /                          --> index_handler");
     println!("[RUST-debug] GET    /video/share/url/parse     --> parse_share_url_handler");
@@ -75,7 +71,6 @@ pub async fn start_server(port: u16) -> anyhow::Result<()> {
     println!("[RUST-debug] GET    /proxy/video               --> proxy_video_handler");
     println!("[RUST-debug] GET    /proxy/image               --> proxy_image_handler\n");
     
-    // 构建应用路由
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/video/share/url/parse", get(parse_share_url_handler))
@@ -96,44 +91,37 @@ pub async fn start_server(port: u16) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// 首页处理器
 async fn index_handler() -> impl IntoResponse {
     Html(include_str!("../templates/index.html"))
 }
 
-/// 解析分享URL参数
 #[derive(Debug, Deserialize)]
 struct ParseShareUrlQuery {
     url: String,
 }
 
-/// 解析分享URL处理器
 async fn parse_share_url_handler(
     Query(params): Query<ParseShareUrlQuery>,
 ) -> Json<HttpResponse<VideoParseInfo>> {
-    // 从字符串中提取URL
     let url = match extract_url_from_string(&params.url) {
         Ok(url) => url,
         Err(e) => {
             return Json(HttpResponse::error(format!("URL提取失败: {}", e)));
         }
     };
-
-    // 解析视频
+    
     match parse_video_share_url(&url).await {
         Ok(info) => Json(HttpResponse::success(info)),
         Err(e) => Json(HttpResponse::error(format!("视频解析失败: {}", e))),
     }
 }
 
-/// 解析视频ID参数
 #[derive(Debug, Deserialize)]
 struct ParseVideoIdQuery {
     source: String,
     video_id: String,
 }
 
-/// 解析视频ID处理器
 async fn parse_video_id_handler(
     Query(params): Query<ParseVideoIdQuery>,
 ) -> Json<HttpResponse<VideoParseInfo>> {
@@ -155,7 +143,6 @@ async fn parse_video_id_handler(
     }
 }
 
-/// 平台信息响应
 #[derive(Debug, Serialize)]
 struct PlatformInfo {
     source: String,
@@ -163,7 +150,6 @@ struct PlatformInfo {
     domains: Vec<String>,
 }
 
-/// 获取支持的平台列表
 async fn platforms_handler() -> Json<HttpResponse<Vec<PlatformInfo>>> {
     let platforms = get_supported_platforms()
         .into_iter()
@@ -177,17 +163,14 @@ async fn platforms_handler() -> Json<HttpResponse<Vec<PlatformInfo>>> {
     Json(HttpResponse::success(platforms))
 }
 
-/// 视频代理参数
 #[derive(Debug, Deserialize)]
 struct ProxyQuery {
     url: String,
 }
 
-/// 视频代理处理器 - 绕过CORS限制
 async fn proxy_video_handler(Query(params): Query<ProxyQuery>) -> impl IntoResponse {
     tracing::info!("🎬 代理视频请求: {}", params.url);
-
-    // 创建HTTP客户端
+    
     let client = match Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
         .timeout(std::time::Duration::from_secs(30))
@@ -204,8 +187,7 @@ async fn proxy_video_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
                 .into_response();
         }
     };
-
-    // 发起请求
+    
     let response = match client.get(&params.url).send().await {
         Ok(r) => r,
         Err(e) => {
@@ -249,8 +231,7 @@ async fn proxy_video_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
     };
 
     tracing::info!("✅ 成功代理视频，大小: {} bytes", bytes.len());
-
-    // 构建响应
+    
     Response::builder()
         .status(StatusCode::OK)
         .header(header::CONTENT_TYPE, content_type)
@@ -262,7 +243,6 @@ async fn proxy_video_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
         .into_response()
 }
 
-/// 图片代理处理器 - 绕过CORS限制
 async fn proxy_image_handler(Query(params): Query<ProxyQuery>) -> impl IntoResponse {
     tracing::debug!("🖼️ 代理图片请求: {}", params.url);
 
@@ -283,8 +263,7 @@ async fn proxy_image_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
                 .into_response();
         }
     };
-
-    // 发起请求
+    
     let response = match client.get(&params.url).send().await {
         Ok(r) => r,
         Err(e) => {
@@ -297,16 +276,14 @@ async fn proxy_image_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
                 .into_response();
         }
     };
-
-    // 获取响应头
+    
     let content_type = response
         .headers()
         .get(reqwest::header::CONTENT_TYPE)
         .and_then(|v| v.to_str().ok())
         .unwrap_or("image/jpeg")
         .to_string();
-
-    // 获取响应体
+    
     let bytes = match response.bytes().await {
         Ok(b) => b,
         Err(e) => {
@@ -319,8 +296,7 @@ async fn proxy_image_handler(Query(params): Query<ProxyQuery>) -> impl IntoRespo
                 .into_response();
         }
     };
-
-    // 构建响应
+    
     Response::builder()
         .status(StatusCode::OK)
         .header(header::CONTENT_TYPE, content_type)

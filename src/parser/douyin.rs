@@ -56,7 +56,6 @@ impl VideoParser for DouyinParser {
 }
 
 impl DouyinParser {
-    /// 解析App分享链接
     async fn parse_app_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
         let client = create_no_redirect_client()?;
         
@@ -73,10 +72,8 @@ impl DouyinParser {
             .ok_or_else(|| anyhow!("未找到重定向地址"))?
             .to_str()?;
         
-        // 解析视频ID
         let video_id = self.extract_video_id_from_path(location)?;
         
-        // 检查是否为西瓜视频
         if location.contains("ixigua.com") {
             return Err(anyhow!("西瓜视频暂不支持"));
         }
@@ -84,19 +81,16 @@ impl DouyinParser {
         self.parse_video_id(&video_id).await
     }
     
-    /// 解析PC网页端分享链接
     async fn parse_pc_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
         let video_id = self.extract_video_id_from_path(share_url)?;
         self.parse_video_id(&video_id).await
     }
     
-    /// 从路径中提取视频ID
     fn extract_video_id_from_path(&self, url_path: &str) -> Result<String> {
         let url = url::Url::parse(url_path).or_else(|_| {
             url::Url::parse(&format!("https://example.com{}", url_path))
         })?;
         
-        // 检查是否有 modal_id 参数（精选页面）
         if let Some(modal_id) = url.query_pairs().find(|(k, _)| k == "modal_id") {
             return Ok(modal_id.1.to_string());
         }
@@ -111,7 +105,6 @@ impl DouyinParser {
             .ok_or_else(|| anyhow!("无法从路径中提取视频ID"))
     }
     
-    /// 检查是否为图集
     fn check_is_note(&self, html: &str) -> bool {
         // 查找 canonical link
         let document = Html::parse_document(html);
@@ -126,7 +119,6 @@ impl DouyinParser {
         false
     }
     
-    /// 解析图集数据
     async fn parse_note_data(&self, video_id: &str) -> Result<Value> {
         let web_id = format!("75{}", generate_numeric_id(15));
         let a_bogus = generate_random_string(64);
@@ -151,7 +143,6 @@ impl DouyinParser {
             .ok_or_else(|| anyhow!("获取图集数据失败"))
     }
     
-    /// 从HTML中解析视频数据
     fn parse_video_data_from_html(&self, html: &str, video_id: &str) -> Result<Value> {
         let pattern = r"window\._ROUTER_DATA\s*=\s*(.*?)</script>";
         let json_str = extract_json_from_html(html, pattern)?;
@@ -161,17 +152,13 @@ impl DouyinParser {
         // 调试：打印JSON结构
         tracing::debug!("JSON keys: {:?}", json.as_object().map(|o| o.keys().collect::<Vec<_>>()));
         
-        // 关键修复：直接访问 loaderData 下的所有键
-        // 因为键名 "video_(id)/page" 包含特殊字符，JSON pointer 无法直接使用
         if let Some(loader_data) = json.get("loaderData") {
             if let Some(obj) = loader_data.as_object() {
                 tracing::debug!("loaderData keys: {:?}", obj.keys().collect::<Vec<_>>());
                 
-                // 遍历所有键，查找包含 videoInfoRes 的
                 for (key, value) in obj {
                     tracing::debug!("检查键: {}", key);
                     
-                    // 尝试获取视频数据
                     if let Some(video_info_res) = value.get("videoInfoRes") {
                         if let Some(item_list) = video_info_res.get("item_list") {
                             if let Some(items) = item_list.as_array() {
@@ -182,7 +169,6 @@ impl DouyinParser {
                             }
                         }
                         
-                        // 检查是否被过滤
                         if let Some(filter_list) = video_info_res.get("filter_list") {
                             if let Some(filters) = filter_list.as_array() {
                                 for filter in filters {
@@ -201,7 +187,6 @@ impl DouyinParser {
             }
         }
         
-        // 保存HTML用于调试
         if let Err(e) = std::fs::write("debug_douyin.html", html) {
             tracing::warn!("无法保存调试HTML: {}", e);
         }
@@ -257,23 +242,19 @@ impl DouyinParser {
             }
         }
         
-        // 提取视频URL（非图集时）
         if !is_note && info.images.is_empty() {
             if let Some(video_url) = data.pointer("/video/play_addr/url_list/0")
                 .and_then(|v| v.as_str())
             {
                 let video_url = video_url.replace("playwm", "play");
-                // 获取302重定向后的真实地址
                 info.video_url = Some(self.get_redirect_url(&video_url).await.unwrap_or(video_url));
             }
         }
         
-        // 图集时清空视频URL
         if !info.images.is_empty() {
             info.video_url = None;
         }
         
-        // 验证是否有内容
         if info.video_url.is_none() && info.images.is_empty() {
             return Err(anyhow!("没有找到视频或图集内容"));
         }
@@ -281,11 +262,9 @@ impl DouyinParser {
         Ok(info)
     }
     
-    /// 优先获取非webp格式的图片URL
     fn get_non_webp_url(&self, url_list: Option<&Value>) -> Option<String> {
         let array = url_list?.as_array()?;
         
-        // 优先查找非webp格式
         for url in array {
             if let Some(url_str) = url.as_str() {
                 if !url_str.contains(".webp") {
@@ -294,7 +273,6 @@ impl DouyinParser {
             }
         }
         
-        // 返回第一个
         array.first()
             .and_then(|v| v.as_str())
             .map(|s| s.to_string())

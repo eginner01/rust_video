@@ -10,7 +10,6 @@ pub struct PipixiaParser;
 #[async_trait]
 impl VideoParser for PipixiaParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
-        // 禁用重定向获取video_id
         let client = create_no_redirect_client()?;
         
         let response = client
@@ -19,13 +18,11 @@ impl VideoParser for PipixiaParser {
             .send()
             .await?;
         
-        // 获取重定向的Location header
         let location = response.headers()
             .get("location")
             .and_then(|v| v.to_str().ok())
             .ok_or_else(|| anyhow!("无法获取重定向地址"))?;
         
-        // 从location中提取video_id
         let parsed_url = url::Url::parse(location)?;
         let video_id = parsed_url.path()
             .trim_matches('/')
@@ -53,15 +50,13 @@ impl VideoParser for PipixiaParser {
         
         let json: Value = response.json().await?;
         
-        // 提取数据：data.cell_comments[0].comment_info.item
         let data = json.pointer("/data/cell_comments/0/comment_info/item")
             .ok_or_else(|| anyhow!("无法获取视频数据"))?;
         
         let author_id = data.pointer("/author/id")
             .and_then(|v| v.as_str())
             .unwrap_or("");
-        
-        // 提取图集
+
         let mut images = Vec::new();
         if let Some(multi_image) = data.pointer("/note/multi_image").and_then(|v| v.as_array()) {
             for image_item in multi_image {
@@ -76,12 +71,10 @@ impl VideoParser for PipixiaParser {
             }
         }
         
-        // 获取视频URL（备用，可能有水印）
         let mut video_url = data.pointer("/video/video_high/url_list/0/url")
             .and_then(|v| v.as_str())
             .map(|s| s.to_string());
         
-        // 尝试从comments中获取无水印视频
         if let Some(comments) = data.pointer("/comments").and_then(|v| v.as_array()) {
             for comment in comments {
                 let comment_author_id = comment.pointer("/item/author/id")

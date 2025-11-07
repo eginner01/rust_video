@@ -35,7 +35,6 @@ impl VideoParser for QuanminParser {
         
         let json: Value = response.json().await?;
         
-        // 检查返回状态
         let errno = json.pointer("/errno")
             .and_then(|v| v.as_i64())
             .unwrap_or(-1);
@@ -47,7 +46,6 @@ impl VideoParser for QuanminParser {
             return Err(anyhow!("全民视频API错误: {}", error));
         }
         
-        // 检查视频状态
         if let Some(status_text) = json.pointer("/data/meta/statusText").and_then(|v| v.as_str()) {
             if !status_text.is_empty() {
                 return Err(anyhow!("视频状态错误: {}", status_text));
@@ -74,7 +72,6 @@ impl VideoParser for QuanminParser {
                 .to_string(),
         };
         
-        // 获取视频标题，如果没有则使用分享标题
         info.title = data.pointer("/meta/title")
             .and_then(|v| v.as_str())
             .or_else(|| data.pointer("/shareInfo/title").and_then(|v| v.as_str()))

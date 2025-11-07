@@ -148,7 +148,6 @@ impl BilibiliParser {
         Err(anyhow!("不是有效的B站视频链接"))
     }
     
-    /// 解析短链
     async fn resolve_short_url(&self, url: &str) -> Result<String> {
         let client = reqwest::Client::builder()
             .redirect(reqwest::redirect::Policy::none())

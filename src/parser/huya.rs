@@ -11,7 +11,6 @@ pub struct HuyaParser;
 #[async_trait]
 impl VideoParser for HuyaParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
-        // 从URL中提取视频ID: /(\d+).html
         let re = Regex::new(r"/(\d+)\.html")?;
         
         let video_id = re.captures(share_url)

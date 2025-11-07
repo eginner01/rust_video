@@ -12,8 +12,7 @@ pub struct WeiboParser;
 impl VideoParser for WeiboParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
         let parsed_url = url::Url::parse(share_url)?;
-        
-        // Handle video URLs (show?fid= or /tv/show/)
+
         if share_url.contains("show?fid=") {
             let video_id = parsed_url
                 .query_pairs()
@@ -102,7 +101,6 @@ impl VideoParser for WeiboParser {
 impl WeiboParser {
     /// 解析帖子URL（图集等）
     async fn parse_post_url(&self, post_id: &str, original_url: &str) -> Result<VideoParseInfo> {
-        // 尝试移动端API
         let req_url = format!("https://m.weibo.cn/statuses/show?id={}", post_id);
         let client = create_http_client()?;
         
@@ -124,8 +122,7 @@ impl WeiboParser {
                 }
             }
         }
-        
-        // 降级到桌面页面解析
+
         let response = client
             .get(original_url)
             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
@@ -136,8 +133,7 @@ impl WeiboParser {
         
         self.parse_html_page(&html)
     }
-    
-    /// 从移动端API数据中提取信息
+
     fn parse_mobile_api_data(&self, data: &Value) -> Result<VideoParseInfo> {
         let mut info = VideoParseInfo::new();
         

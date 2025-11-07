@@ -54,8 +54,7 @@ impl VideoParser for LishipinParser {
         let system_time = json.pointer("/systemTime")
             .and_then(|v| v.as_str())
             .unwrap_or("");
-        
-        // 替换URL中的时间戳为cont-{videoId}
+
         let video_url = video_src_url.replace(system_time, &format!("cont-{}", video_id));
         
         let mut info = VideoParseInfo::new();

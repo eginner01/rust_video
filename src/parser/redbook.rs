@@ -11,8 +11,7 @@ pub struct RedbookParser;
 impl VideoParser for RedbookParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
         let client = create_http_client()?;
-        
-        // 获取页面内容
+
         let html = client
             .get(share_url)
             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0")
@@ -31,12 +30,9 @@ impl VideoParser for RedbookParser {
         let json_str = extract_json_from_html(&html, pattern)?;
         
         tracing::debug!("提取的JSON长度: {} 字符", json_str.len());
-        
-        // 清理JSON字符串（移除可能的BOM和其他特殊字符）
+
         let mut json_str = json_str.trim().trim_start_matches('\u{feff}').to_string();
-        
-        // 将JavaScript的undefined替换为null（小红书的JSON包含undefined值）
-        // 使用正则表达式匹配 :undefined 或 ,undefined 或 [undefined
+
         use regex::Regex;
         let undefined_re = Regex::new(r":undefined\b|,undefined\b|\[undefined\b").unwrap();
         json_str = undefined_re.replace_all(&json_str, |caps: &regex::Captures| {
@@ -51,13 +47,11 @@ impl VideoParser for RedbookParser {
         }).to_string();
         
         tracing::debug!("已将undefined替换为null");
-        
-        // 保存清理后的JSON用于调试
+
         if let Err(e) = std::fs::write("debug_redbook_cleaned.json", &json_str) {
             tracing::warn!("无法保存调试JSON: {}", e);
         }
-        
-        // 尝试解析JSON，提供更详细的错误信息
+
         let json: Value = serde_json::from_str(&json_str).map_err(|e| {
             tracing::error!("JSON解析失败: {}", e);
             tracing::error!("JSON前100字符: {}", &json_str.chars().take(100).collect::<String>());
@@ -70,15 +64,13 @@ impl VideoParser for RedbookParser {
         })?;
         
         tracing::info!("✅ JSON解析成功");
-        
-        // 获取note ID
+
         let note_id = json.pointer("/note/currentNoteId")
             .and_then(|v| v.as_str())
             .ok_or_else(|| anyhow!("无法获取note ID"))?;
         
         tracing::debug!("Note ID: {}", note_id);
-        
-        // 获取note数据
+
         let note_path = format!("/note/noteDetailMap/{}/note", note_id);
         let note = json.pointer(&note_path)
             .ok_or_else(|| anyhow!("无法获取note数据，路径: {}", note_path))?;
@@ -107,8 +99,8 @@ impl RedbookParser {
                 .unwrap_or("")
                 .to_string(),
         };
-        
-        // 提取标题
+
+
         info.title = note.pointer("/title")
             .and_then(|v| v.as_str())
             .unwrap_or("")
@@ -174,8 +166,7 @@ impl RedbookParser {
                 } else {
                     ""
                 };
-                
-                // 如果包含 notes_pre_post，替换域名
+
                 if url.contains("notes_pre_post") {
                     return format!(
                         "https://ci.xiaohongshu.com/notes_pre_post/{}{}?imageView2/format/jpg",

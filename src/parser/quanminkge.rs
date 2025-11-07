@@ -33,7 +33,6 @@ impl VideoParser for QuanminkgeParser {
             .text()
             .await?;
         
-        // 提取 window.__DATA__
         let re = Regex::new(r"window\.__DATA__ = (.*?);")?;
         let json_str = re.captures(&html)
             .and_then(|caps| caps.get(1))

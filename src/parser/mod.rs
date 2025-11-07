@@ -24,13 +24,10 @@ use crate::models::{VideoParseInfo, VideoSource};
 use anyhow::Result;
 use async_trait::async_trait;
 
-/// 视频解析器 trait
 #[async_trait]
 pub trait VideoParser: Send + Sync {
-    /// 从分享URL解析视频信息
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo>;
-    
-    /// 从视频ID解析视频信息（部分平台支持）
+
     async fn parse_video_id(&self, _video_id: &str) -> Result<VideoParseInfo> {
         Err(anyhow::anyhow!("该平台不支持通过视频ID解析"))
     }
@@ -38,23 +35,18 @@ pub trait VideoParser: Send + Sync {
 
 /// 根据URL自动识别平台并解析
 pub async fn parse_video_share_url(share_url: &str) -> Result<VideoParseInfo> {
-    // 识别平台
     let source = identify_video_source(share_url)?;
-    
-    // 获取对应平台的解析器
+
     let parser = get_parser(source)?;
-    
-    // 解析视频
+
     parser.parse_share_url(share_url).await
 }
 
-/// 根据平台和视频ID解析
 pub async fn parse_video_id(source: VideoSource, video_id: &str) -> Result<VideoParseInfo> {
     let parser = get_parser(source)?;
     parser.parse_video_id(video_id).await
 }
 
-/// 从URL中识别视频平台
 fn identify_video_source(url: &str) -> Result<VideoSource> {
     let sources = [
         VideoSource::DouYin,
@@ -92,7 +84,6 @@ fn identify_video_source(url: &str) -> Result<VideoSource> {
     Err(anyhow::anyhow!("无法识别视频平台"))
 }
 
-/// 获取指定平台的解析器
 fn get_parser(source: VideoSource) -> Result<Box<dyn VideoParser>> {
     match source {
         VideoSource::DouYin => Ok(Box::new(douyin::DouyinParser)),
@@ -120,7 +111,6 @@ fn get_parser(source: VideoSource) -> Result<Box<dyn VideoParser>> {
     }
 }
 
-/// 获取所有支持的平台列表
 pub fn get_supported_platforms() -> Vec<(VideoSource, &'static str, Vec<&'static str>)> {
     vec![
         (VideoSource::DouYin, "抖音", VideoSource::DouYin.share_url_domains()),

@@ -10,7 +10,6 @@ pub struct HuoshanParser;
 #[async_trait]
 impl VideoParser for HuoshanParser {
     async fn parse_share_url(&self, share_url: &str) -> Result<VideoParseInfo> {
-        // 禁用重定向获取video_id
         let client = create_no_redirect_client()?;
         
         let response = client
@@ -19,7 +18,6 @@ impl VideoParser for HuoshanParser {
             .send()
             .await?;
         
-        // 获取重定向的Location header
         let location = response.headers()
             .get("location")
             .and_then(|v| v.to_str().ok())
