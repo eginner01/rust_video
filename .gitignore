@@ -1,0 +1,34 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Build
+/dist/
+/build/
+
+# Logs
+*.log
+
+# Debug files
+debug_*.html
+debug_*.json
+
+# Temporary docs
+*_TEMP.md
+*_DRAFT.md
