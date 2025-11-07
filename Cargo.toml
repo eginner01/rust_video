@@ -58,7 +58,12 @@ rand = "0.8"
 # Date and time
 chrono = "0.4"
 
+[build-dependencies]
+# Windows 资源配置（图标等）
+winres = "0.1"
+
 [profile.release]
 opt-level = 3
 lto = true
 codegen-units = 1
+strip = true  # 移除调试符号，减小文件体积
