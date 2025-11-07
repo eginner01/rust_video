@@ -282,27 +282,6 @@ server {
 }
 ```
 
----
-
-## 🧪 测试
-
-项目包含 Python 测试脚本：
-
-```bash
-# 安装依赖
-pip install requests
-
-# 运行测试
-python test_api.py
-
-# 或使用 PowerShell 脚本（Windows）
-.\run_test.ps1
-```
-
-测试覆盖 3 个平台（抖音视频、抖音图文、小红书），自动验证 API 功能。
-
----
-
 ## 🛠️ 开发
 
 ### 项目结构
