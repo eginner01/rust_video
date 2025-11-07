@@ -6,8 +6,9 @@
 
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com)
+[![Docker Hub](https://img.shields.io/badge/docker-eginner01/rust__video__parser-blue.svg)](https://hub.docker.com/r/eginner01/rust_video_parser)
 [![Version](https://img.shields.io/badge/version-2.2.1-brightgreen.svg)](#)
+[![GitHub](https://img.shields.io/badge/github-eginner01/rust__video-black.svg)](https://github.com/eginner01/rust_video)
 
 [功能特性](#-功能特性) • [快速开始](#-快速开始) • [API 文档](#-api-文档) • [部署指南](#-部署方式) • [开发说明](#-开发)
 
@@ -71,14 +72,35 @@ Rust Video Parser 是一个使用 Rust 开发的高性能短视频去水印解�
 
 ## 🚀 快速开始
 
-### 方法 1: Docker 部署（推荐）
+### 方法 1: Docker 部署（推荐）⭐
+
+**一键部署（最简单）：**
 
 ```bash
-# 使用 Docker Compose
-docker-compose up -d
+docker pull eginner01/rust_video_parser:latest
+docker run -d --name rust_video_parser -p 8080:8080 eginner01/rust_video_parser:latest
+```
 
-# 或使用 Docker 命令
-docker run -d -p 8080:8080 --name rust_video_parser rust_video_parser:latest
+**完整配置：**
+
+```bash
+docker run -d \
+  --name rust_video_parser \
+  -p 8080:8080 \
+  -e RUST_LOG=info \
+  --restart unless-stopped \
+  eginner01/rust_video_parser:latest
+```
+
+**使用 Docker Compose：**
+
+```bash
+# 克隆项目
+git clone https://github.com/eginner01/rust_video.git
+cd rust_video
+
+# 启动服务
+docker-compose up -d
 ```
 
 访问：http://localhost:8080
@@ -87,10 +109,10 @@ docker run -d -p 8080:8080 --name rust_video_parser rust_video_parser:latest
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-username/rust_video_parser.git
-cd rust_video_parser
+git clone https://github.com/eginner01/rust_video.git
+cd rust_video
 
-# 2. 编译（需要 Rust 1.70+）
+# 2. 编译（需要 Rust 1.75+）
 cargo build --release
 
 # 3. 运行
@@ -102,7 +124,7 @@ open http://localhost:8080
 
 ### 方法 3: 预编译二进制
 
-从 [Releases](https://github.com/your-username/rust_video_parser/releases) 下载对应平台的二进制文件：
+从 [Releases](https://github.com/eginner01/rust_video/releases) 下载对应平台的二进制文件：
 
 ```bash
 # Linux/macOS

@@ -1,5 +1,5 @@
 # 构建阶段
-FROM rust:1.70 as builder
+FROM rust:latest AS builder
 
 WORKDIR /app
 
