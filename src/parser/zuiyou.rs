@@ -42,27 +42,11 @@ impl ZuiyouParser {
         let json: Value = response.json().await?;
         
         let data = json.pointer("/data/post")
-            .ok_or_else(|| anyhow!("无法获取视频数据"))?;
-        
-        // 获取视频key
-        let video_key = data.pointer("/imgs/0/id")
-            .and_then(|v| v.as_str())
-            .ok_or_else(|| anyhow!("无法获取视频key"))?;
+            .ok_or_else(|| anyhow!("无法获取数据"))?;
         
         let mut info = VideoParseInfo::new();
         
-        // 使用video_key获取视频URL
-        let video_path = format!("/videos/{}/url", video_key);
-        info.video_url = data.pointer(&video_path)
-            .and_then(|v| v.as_str())
-            .map(|s| s.to_string());
-        
-        // 获取封面
-        let cover_path = format!("/videos/{}/cover_urls/0", video_key);
-        info.cover_url = data.pointer(&cover_path)
-            .and_then(|v| v.as_str())
-            .map(|s| s.to_string());
-        
+        // 获取标题和作者信息
         info.title = data.pointer("/content")
             .and_then(|v| v.as_str())
             .unwrap_or("")
@@ -80,7 +64,81 @@ impl ZuiyouParser {
                 .to_string(),
         };
         
+        // 检查是否有videos字段（视频内容）
+        if let Some(videos) = data.get("videos").and_then(|v| v.as_object()) {
+            // 获取第一个视频的key
+            if let Some((_video_key, video_data)) = videos.iter().next() {
+                // 获取视频URL
+                info.video_url = video_data.pointer("/url")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string());
+                
+                // 获取封面URL - 确保使用jpg格式
+                if let Some(cover_urls) = video_data.pointer("/cover_urls").and_then(|v| v.as_array()) {
+                    if let Some(cover) = cover_urls.first().and_then(|v| v.as_str()) {
+                        // 确保封面是jpg格式
+                        info.cover_url = Some(Self::ensure_jpg_format(cover));
+                    }
+                }
+                
+                // 如果没有封面，尝试从imgs获取
+                if info.cover_url.is_none() {
+                    if let Some(imgs_array) = data.pointer("/imgs").and_then(|v| v.as_array()) {
+                        if let Some(first_img) = imgs_array.first() {
+                            if let Some(img_url) = first_img.pointer("/url").and_then(|v| v.as_str()) {
+                                info.cover_url = Some(Self::ensure_jpg_format(img_url));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 检查是否有imgs字段（图片内容）
+        if let Some(imgs_array) = data.pointer("/imgs").and_then(|v| v.as_array()) {
+            for img in imgs_array {
+                if let Some(img_url) = img.pointer("/url").and_then(|v| v.as_str()) {
+                    // 确保图片URL是jpg格式
+                    let img_url = Self::ensure_jpg_format(img_url);
+                    
+                    let img_info = crate::models::ImgInfo {
+                        url: img_url,
+                        live_photo_url: None,
+                    };
+                    info.images.push(img_info);
+                }
+            }
+        }
+        
+        // 如果既没有视频也没有图片，返回错误
+        if info.video_url.is_none() && info.images.is_empty() {
+            return Err(anyhow!("未找到视频或图片内容"));
+        }
+        
         Ok(info)
+    }
+    
+    /// 确保URL是jpg格式
+    fn ensure_jpg_format(url: &str) -> String {
+        // 如果URL已经包含jpg后缀，直接返回
+        if url.contains(".jpg") || url.contains(".jpeg") {
+            return url.to_string();
+        }
+        
+        // 如果URL包含其他图片格式，替换为jpg
+        let url = url.replace(".png", ".jpg")
+            .replace(".webp", ".jpg")
+            .replace(".gif", ".jpg");
+        
+        // 如果URL包含查询参数，确保在参数前添加.jpg
+        if url.contains('?') && !url.contains(".jpg") {
+            url.replace('?', ".jpg?")
+        } else if !url.contains(".jpg") {
+            // 如果没有任何扩展名，添加.jpg
+            format!("{}.jpg", url)
+        } else {
+            url
+        }
     }
 }
 
