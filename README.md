@@ -9,8 +9,10 @@
 [![Vuetify](https://img.shields.io/badge/vuetify-3.5-blue.svg?style=flat-square&logo=vuetify)](https://vuetifyjs.com/)
 [![Platforms](https://img.shields.io/badge/platforms-22-success.svg?style=flat-square)](#-支持平台)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Docker](https://img.shields.io/badge/docker-ready-blue.svg?style=flat-square&logo=docker)](https://hub.docker.com)
-[![Version](https://img.shields.io/badge/version-2.1.0-brightgreen.svg?style=flat-square)](#)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/eginner01/rust_video_parser)
+[![Docker Pulls](https://img.shields.io/docker/pulls/eginner01/rust_video_parser?style=flat-square&logo=docker)](https://hub.docker.com/r/eginner01/rust_video_parser)
+[![Docker Image Size](https://img.shields.io/docker/image-size/eginner01/rust_video_parser/latest?style=flat-square&logo=docker)](https://hub.docker.com/r/eginner01/rust_video_parser)
+[![Version](https://img.shields.io/badge/version-2.1.1-brightgreen.svg?style=flat-square)](#)
 
 [✨ 功能特性](#-功能特性) • [🚀 快速开始](#-快速开始) • [📸 截图展示](#-截图展示) • [🔧 API文档](#-api-文档) • [🐳 Docker部署](#-docker部署)
 
@@ -144,14 +146,58 @@
 
 ## 🚀 快速开始
 
-### 方式一：Docker 部署（⭐ 推荐）
+### 方式一：Docker Hub 镜像（⭐ 最快部署）
+
+**无需下载代码，一行命令启动：**
+
+```bash
+# 直接拉取并运行镜像
+docker run -d \
+  --name rust_video_parser \
+  -p 8080:8080 \
+  -e RUST_LOG=info \
+  --restart unless-stopped \
+  eginner01/rust_video_parser:latest
+
+# 访问应用
+open http://localhost:8080
+```
+
+**或使用 docker-compose：**
+
+```bash
+# 创建 docker-compose.yml
+cat > docker-compose.yml <<EOF
+version: '3.8'
+services:
+  rust_video_parser:
+    image: eginner01/rust_video_parser:latest
+    container_name: rust_video_parser
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - RUST_LOG=info
+      - SERVER_PORT=8080
+EOF
+
+# 启动服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+```
+
+**就这么简单！🎉 镜像大小仅 ~50MB，启动只需 5 秒！**
+
+### 方式二：本地构建部署
 
 ```bash
 # 克隆项目
 git clone https://github.com/eginner01/rust_video_parser.git
 cd rust_video_parser
 
-# 一键启动
+# 一键启动（使用项目内的 docker-compose.yml）
 docker-compose up -d
 
 # 查看日志
@@ -161,9 +207,7 @@ docker-compose logs -f
 open http://localhost:8080
 ```
 
-**就这么简单！🎉**
-
-### 方式二：源码编译
+### 方式三：源码编译
 
 #### 前置要求
 
@@ -222,13 +266,13 @@ npm run dev
 ### 1. 解析视频链接
 
 ```http
-GET /video/share/url/parse?url={video_url}
+GET /api/video/share/url/parse?url={video_url}
 ```
 
 **请求示例**
 
 ```bash
-curl "http://localhost:8080/video/share/url/parse?url=https://v.douyin.com/xxxxxx/"
+curl "http://localhost:8080/api/video/share/url/parse?url=https://v.douyin.com/xxxxxx/"
 ```
 
 **响应示例**
@@ -260,26 +304,44 @@ curl "http://localhost:8080/video/share/url/parse?url=https://v.douyin.com/xxxxx
 ### 2. 视频代理
 
 ```http
-GET /proxy/video?url={video_url}
+GET /api/proxy/video?url={video_url}
 ```
 
 用于绕过CORS限制，代理视频资源。
 
+**请求示例**
+
+```bash
+curl "http://localhost:8080/api/proxy/video?url=https://..."
+```
+
 ### 3. 图片代理
 
 ```http
-GET /proxy/image?url={image_url}
+GET /api/proxy/image?url={image_url}
 ```
 
 用于绕过CORS限制，代理图片资源。
 
+**请求示例**
+
+```bash
+curl "http://localhost:8080/api/proxy/image?url=https://..."
+```
+
 ### 4. 支持平台列表
 
 ```http
-GET /platforms
+GET /api/platforms
 ```
 
 返回所有支持的平台信息。
+
+**请求示例**
+
+```bash
+curl "http://localhost:8080/api/platforms"
+```
 
 ### 更多API文档
 
@@ -289,10 +351,72 @@ GET /platforms
 
 ## 🐳 Docker 部署
 
-### 快速部署
+### 方式 A：使用 Docker Hub 镜像（推荐）
+
+**1. 直接运行**
 
 ```bash
-# 使用 docker-compose
+# 拉取最新镜像
+docker pull eginner01/rust_video_parser:latest
+
+# 运行容器
+docker run -d \
+  --name rust_video_parser \
+  -p 8080:8080 \
+  -e RUST_LOG=info \
+  -e SERVER_PORT=8080 \
+  --restart unless-stopped \
+  eginner01/rust_video_parser:latest
+
+# 查看日志
+docker logs -f rust_video_parser
+
+# 停止容器
+docker stop rust_video_parser
+
+# 删除容器
+docker rm rust_video_parser
+```
+
+**2. 使用 docker-compose**
+
+创建 `docker-compose.yml`：
+
+```yaml
+version: '3.8'
+
+services:
+  rust_video_parser:
+    image: eginner01/rust_video_parser:latest
+    container_name: rust_video_parser
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - RUST_LOG=info
+      - SERVER_PORT=8080
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+```
+
+启动命令：
+
+```bash
+# 启动服务
 docker-compose up -d
 
 # 查看状态
@@ -305,48 +429,52 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### 自定义配置
-
-**docker-compose.yml**
-
-```yaml
-version: '3.8'
-
-services:
-  rust_video_parser:
-    image: rust_video_parser:latest
-    container_name: rust_video_parser
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      - RUST_LOG=info
-      - SERVER_PORT=8080
-    volumes:
-      - ./logs:/app/logs
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
-```
-
-### 镜像构建
+**3. 指定版本**
 
 ```bash
+# 使用特定版本
+docker pull eginner01/rust_video_parser:2.1.1
+docker run -d \
+  --name rust_video_parser \
+  -p 8080:8080 \
+  eginner01/rust_video_parser:2.1.1
+```
+
+### 方式 B：自定义构建
+
+如果需要修改代码或自定义构建：
+
+```bash
+# 克隆项目
+git clone https://github.com/eginner01/rust_video_parser.git
+cd rust_video_parser
+
 # 构建镜像
-docker build -t rust_video_parser:latest .
+docker build -t rust_video_parser:custom .
 
 # 查看镜像大小
 docker images rust_video_parser
 
-# 运行容器
+# 运行自定义镜像
 docker run -d \
   --name rust_video_parser \
   -p 8080:8080 \
   -e RUST_LOG=info \
   --restart unless-stopped \
-  rust_video_parser:latest
+  rust_video_parser:custom
+```
+
+### 多架构支持
+
+Docker Hub 镜像支持多架构：
+
+```bash
+# 支持的架构
+- linux/amd64 (x86_64)
+- linux/arm64 (ARM64)
+
+# 自动选择适合的架构
+docker pull eginner01/rust_video_parser:latest
 ```
 
 ### Nginx 反向代理
@@ -574,6 +702,14 @@ npm run build
 
 ## 📝 更新日志
 
+### v2.1.1 (2024-11-08)
+
+**重要修复**
+- 🔧 修复 Docker 部署 API 路由 404 问题
+- 📦 添加 `/api` 路由前缀统一前后端
+- 🐳 优化 Docker Hub 镜像部署流程
+- 📝 完善 README 镜像部署文档
+
 ### v2.1.0 (2024-11-08)
 
 **新增功能**
@@ -583,6 +719,7 @@ npm run build
 - 🖼️ 封面图片下载
 - ▶️ 视频在线播放器
 - 🎭 丰富的动画效果
+- 🐳 Docker Hub 镜像发布
 
 **优化改进**
 - ⚡ Docker镜像优化，体积减小50%
