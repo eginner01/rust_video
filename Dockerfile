@@ -12,29 +12,28 @@ RUN npm ci --prefer-offline --no-audit
 # 复制前端源代码
 COPY frontend/ ./
 
-# 构建前端项目（输出到 ../templates/dist）
-RUN npm run build
+# 构建前端项目（跳过类型检查，并指定输出到 dist 目录）
+RUN npx vite build --outDir dist
 
 # 后端构建阶段
-FROM rust:1.75-alpine AS backend-builder
+FROM rust:alpine AS backend-builder
 
-# 安装构建依赖
-RUN apk add --no-cache musl-dev openssl-dev pkgconfig
+# 安装构建依赖（包括 OpenSSL 静态库）
+RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig
 
 WORKDIR /app
 
-# 复制依赖文件并预构建依赖（利用Docker缓存）
+# 复制依赖文件
 COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && \
-    echo "fn main() {}" > src/main.rs && \
-    cargo build --release && \
-    rm -rf src
 
 # 复制源代码
 COPY src ./src
 
-# 重新构建（只编译变更的代码）
-RUN touch src/main.rs && cargo build --release
+# 从前端构建阶段复制构建结果（后端编译时需要）
+COPY --from=frontend-builder /frontend/dist ./templates/dist
+
+# 构建后端项目
+RUN cargo build --release
 
 # 最终运行阶段
 FROM alpine:latest
@@ -50,8 +49,7 @@ WORKDIR /app
 
 # 从构建阶段复制文件
 COPY --from=backend-builder /app/target/release/rust_video_parser /usr/local/bin/
-COPY --from=frontend-builder /frontend/../templates/dist ./templates/dist
-COPY templates/index.html ./templates/
+COPY --from=frontend-builder /frontend/dist ./templates/dist
 
 # 设置权限
 RUN chown -R appuser:appuser /app

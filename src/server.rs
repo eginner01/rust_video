@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::time::Instant;
 use tower_http::cors::CorsLayer;
+use tower_http::services::ServeDir;
 use reqwest::Client;
 
 async fn logger_middleware(
@@ -64,20 +65,27 @@ pub async fn start_server(port: u16) -> anyhow::Result<()> {
     println!("╚══════════════════════════════════════════════════════════╝\n");
     
     println!("[RUST-debug] Registering routes:");
-    println!("[RUST-debug] GET    /                          --> index_handler");
-    println!("[RUST-debug] GET    /video/share/url/parse     --> parse_share_url_handler");
-    println!("[RUST-debug] GET    /video/id/parse            --> parse_video_id_handler");
-    println!("[RUST-debug] GET    /platforms                 --> platforms_handler");
-    println!("[RUST-debug] GET    /proxy/video               --> proxy_video_handler");
-    println!("[RUST-debug] GET    /proxy/image               --> proxy_image_handler\n");
+    println!("[RUST-debug] GET    /                              --> index_handler");
+    println!("[RUST-debug] GET    /api/video/share/url/parse     --> parse_share_url_handler");
+    println!("[RUST-debug] GET    /api/video/id/parse            --> parse_video_id_handler");
+    println!("[RUST-debug] GET    /api/platforms                 --> platforms_handler");
+    println!("[RUST-debug] GET    /api/proxy/video               --> proxy_video_handler");
+    println!("[RUST-debug] GET    /api/proxy/image               --> proxy_image_handler\n");
     
-    let app = Router::new()
-        .route("/", get(index_handler))
+    // API 路由（带 /api 前缀）
+    let api_routes = Router::new()
         .route("/video/share/url/parse", get(parse_share_url_handler))
         .route("/video/id/parse", get(parse_video_id_handler))
         .route("/platforms", get(platforms_handler))
         .route("/proxy/video", get(proxy_video_handler))
-        .route("/proxy/image", get(proxy_image_handler))
+        .route("/proxy/image", get(proxy_image_handler));
+    
+    // 主应用路由
+    let app = Router::new()
+        .route("/", get(index_handler))
+        .route("/title.jpg", get(title_image_handler))
+        .nest_service("/assets", ServeDir::new("templates/dist/assets"))
+        .nest("/api", api_routes)
         .layer(middleware::from_fn(logger_middleware))
         .layer(CorsLayer::permissive());
 
@@ -92,7 +100,32 @@ pub async fn start_server(port: u16) -> anyhow::Result<()> {
 }
 
 async fn index_handler() -> impl IntoResponse {
-    Html(include_str!("../templates/index.html"))
+    match tokio::fs::read_to_string("templates/dist/index.html").await {
+        Ok(content) => Html(content).into_response(),
+        Err(e) => {
+            tracing::error!("Failed to read index.html: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Failed to load page"
+            ).into_response()
+        }
+    }
+}
+
+async fn title_image_handler() -> impl IntoResponse {
+    match tokio::fs::read("templates/dist/title.jpg").await {
+        Ok(content) => (
+            [(header::CONTENT_TYPE, "image/jpeg")],
+            content
+        ).into_response(),
+        Err(e) => {
+            tracing::error!("Failed to read title.jpg: {}", e);
+            (
+                StatusCode::NOT_FOUND,
+                "Image not found"
+            ).into_response()
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]

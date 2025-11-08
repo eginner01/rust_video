@@ -2,11 +2,8 @@ version: '3.8'
 
 services:
   rust_video_parser:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: eginner01/rust_video_parser:latest
     container_name: rust_video_parser
-    image: rust_video_parser:latest
     restart: unless-stopped
     ports:
       - "8080:8080"
