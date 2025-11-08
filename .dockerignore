@@ -1,7 +1,17 @@
 # Rust
 target/
-**/*.rs.bk
-*.pdb
+Cargo.lock
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+
+# Git
+.git/
+.gitignore
+.github/
 
 # IDE
 .vscode/
@@ -10,50 +20,22 @@ target/
 *.swo
 *~
 
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# Documentation
-*.md
-!README.md
-docs/
-
-# Tests
-tests/
-benches/
-
-# Debug files
-debug_*.html
-debug_*.json
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
 logs/
 
-# Environment
+# Release
+release-package/
+
+# Documentation
+*.md
+!README.md
+
+# Other
 .env
 .env.local
-.env.*.local
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Docker
-docker-compose*.yml
-Dockerfile*
-!Dockerfile
-
-# CI/CD
-.github/
-.gitlab-ci.yml
-.travis.yml
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
+title.jpg

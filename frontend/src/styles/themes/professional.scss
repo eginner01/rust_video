@@ -1,0 +1,46 @@
+/* =============================== */
+/*   企业专业版主题                */
+/* =============================== */
+
+.theme-professional {
+  --primary-color: #667eea;
+  --primary-dark: #5568d3;
+  --secondary-color: #764ba2;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  
+  background: var(--bg-color);
+  color: var(--text-primary);
+  
+  .particles-canvas {
+    opacity: 0.25;
+  }
+  
+  /* 卡片效果 */
+  .parser-card,
+  .result-card,
+  .platform-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease;
+    
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+  }
+  
+  /* 按钮效果 */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    
+    &:hover:not(:disabled) {
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    }
+  }
+}
+

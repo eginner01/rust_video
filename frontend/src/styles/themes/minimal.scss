@@ -1,0 +1,127 @@
+/* =============================== */
+/*   极简白主题                    */
+/* =============================== */
+
+.theme-minimal {
+  --primary-color: #000000;
+  --primary-dark: #333333;
+  --secondary-color: #666666;
+  --bg-color: #ffffff;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #e5e5e5;
+  --focus-ring: rgba(0, 0, 0, 0.1);
+  
+  background: var(--bg-color);
+  color: var(--text-primary);
+  
+  .particles-canvas {
+    opacity: 0;
+  }
+  
+  /* 极简风格卡片 - 去除阴影，强调线条 */
+  .parser-card,
+  .result-card,
+  .platform-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0; /* 去除圆角，更简洁 */
+    box-shadow: none;
+    
+    &:hover {
+      border-color: var(--text-primary);
+    }
+  }
+  
+  /* 导航栏 - 固定顶部，简洁设计 */
+  .navigation-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: none;
+    z-index: 100;
+  }
+  
+  /* 按钮 - 黑白风格 */
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg-color);
+    border-radius: 0;
+    
+    &:hover:not(:disabled) {
+      background: var(--text-secondary);
+      box-shadow: none;
+    }
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-primary);
+    border-radius: 0;
+    
+    &:hover:not(:disabled) {
+      background: var(--text-primary);
+      color: var(--bg-color);
+    }
+  }
+  
+  /* 输入框 - 简约边框 */
+  .video-input {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    color: var(--text-primary);
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+    
+    &:focus {
+      border-color: var(--text-primary);
+      box-shadow: none;
+    }
+  }
+  
+  /* 平台标签 - 简约设计 */
+  .platform-tag {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    color: var(--text-secondary);
+    
+    &:hover {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+      color: var(--bg-color);
+    }
+  }
+  
+  /* Logo渐变效果 - 保持简单的黑白渐变 */
+  .hero-title,
+  h1,
+  h2 {
+    background: linear-gradient(135deg, #000000, #666666);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* 上下布局调整 */
+  .main-content {
+    padding-top: 6rem; /* 为固定导航栏预留空间 */
+  }
+  
+  /* 去除所有不必要的装饰 */
+  * {
+    transition: all 0.2s ease; /* 缩短过渡时间，更简洁 */
+  }
+}
+

@@ -1,39 +1,47 @@
 ---
-name: Bug Report
-about: Create a report to help us improve
+name: 🐛 Bug报告
+about: 创建报告帮助我们改进
 title: '[BUG] '
 labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## 🐛 Bug描述
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+清晰简洁地描述这个bug。
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## 📝 复现步骤
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+1. 访问 '...'
+2. 点击 '....'
+3. 滚动到 '....'
+4. 看到错误
 
-**Environment:**
- - OS: [e.g. Ubuntu 22.04, Windows 11, macOS 13]
- - Rust Version: [e.g. 1.70]
- - Version: [e.g. v2.2.1]
+## ✅ 期望行为
 
-**Additional context**
-Add any other context about the problem here.
+清晰简洁地描述你期望发生什么。
 
-**Error Logs**
+## ❌ 实际行为
+
+清晰简洁地描述实际发生了什么。
+
+## 📸 截图
+
+如果适用，添加截图来帮助解释你的问题。
+
+## 💻 环境信息
+
+- OS: [例如 Windows 11, macOS 14, Ubuntu 22.04]
+- 浏览器: [例如 Chrome 119, Firefox 118]
+- 项目版本: [例如 v2.1.0]
+- 部署方式: [Docker / 源码编译]
+
+## 📋 日志信息
+
 ```
-Paste any relevant error logs here
+粘贴相关的日志信息
 ```
 
+## 🔍 附加信息
 
+添加任何其他关于该问题的上下文信息。

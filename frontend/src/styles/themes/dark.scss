@@ -1,0 +1,109 @@
+/* =============================== */
+/*   暗黑专业版主题                */
+/* =============================== */
+
+.theme-dark {
+  --primary-color: #8b5cf6;
+  --primary-dark: #7c3aed;
+  --secondary-color: #a855f7;
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --input-bg: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --focus-ring: rgba(139, 92, 246, 0.25);
+  
+  background: var(--bg-color);
+  color: var(--text-primary);
+  
+  .particles-canvas {
+    opacity: 0;
+  }
+  
+  /* 卡片效果 */
+  .parser-card,
+  .result-card,
+  .platform-section,
+  .navigation-bar {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+  }
+  
+  /* 按钮效果 */
+  .btn-primary {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.4);
+    }
+  }
+  
+  .btn-secondary {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    
+    &:hover:not(:disabled) {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+  }
+  
+  /* 输入框效果 */
+  .video-input {
+    background: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+    
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+  }
+  
+  /* 平台标签 */
+  .platform-tag {
+    background: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+    
+    &:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+  }
+  
+  /* 滚动条美化 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-color);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 5px;
+    
+    &:hover {
+      background: var(--primary-color);
+    }
+  }
+}
+

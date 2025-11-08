@@ -1,0 +1,158 @@
+/* =============================== */
+/*   赛博朋克主题                  */
+/* =============================== */
+
+.theme-cyberpunk {
+  --primary-color: #00f3ff;
+  --primary-dark: #00d4e0;
+  --secondary-color: #ff00ff;
+  --bg-color: #0a0e27;
+  --card-bg: #0f1629;
+  --input-bg: rgba(10, 14, 39, 0.6);
+  --text-primary: #00f3ff;
+  --text-secondary: #8b9dc3;
+  --border-color: rgba(0, 243, 255, 0.3);
+  --focus-ring: rgba(0, 243, 255, 0.4);
+  
+  background: var(--bg-color);
+  color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+  
+  /* 扫描线效果 */
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 243, 255, 0.03) 50%
+    );
+    background-size: 100% 4px;
+    animation: scanlines 10s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  /* 网格背景 */
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .particles-canvas {
+    opacity: 0.6;
+  }
+  
+  /* 霓虹光效 */
+  .parser-card,
+  .result-card,
+  .platform-section,
+  .navigation-bar {
+    background: rgba(15, 22, 41, 0.85);
+    border: 2px solid rgba(0, 243, 255, 0.4);
+    box-shadow: 
+      0 0 20px rgba(0, 243, 255, 0.2),
+      inset 0 0 20px rgba(0, 243, 255, 0.05);
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(0, 243, 255, 0.1),
+        transparent
+      );
+      border-radius: inherit;
+      animation: borderGlow 3s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+  
+  /* 按钮效果 */
+  .btn-primary {
+    background: linear-gradient(135deg, #00f3ff, #00d4e0);
+    color: #0a0e27;
+    font-weight: 700;
+    box-shadow: 
+      0 0 20px rgba(0, 243, 255, 0.4),
+      inset 0 0 10px rgba(255, 255, 255, 0.2);
+    
+    &:hover:not(:disabled) {
+      box-shadow: 
+        0 0 30px rgba(0, 243, 255, 0.6),
+        inset 0 0 15px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+  
+  /* 输入框效果 */
+  .video-input {
+    background: var(--input-bg);
+    border-color: rgba(0, 243, 255, 0.4);
+    color: var(--primary-color);
+    
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    }
+    
+    &::placeholder {
+      color: var(--text-secondary);
+    }
+  }
+  
+  /* 文字发光效果 */
+  .hero-title,
+  h1,
+  h2,
+  h3 {
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+  }
+}
+
+/* 动画定义 */
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(50px);
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+

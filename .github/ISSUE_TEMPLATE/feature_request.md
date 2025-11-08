@@ -1,22 +1,46 @@
 ---
-name: Feature Request
-about: Suggest an idea for this project
+name: 💡 功能建议
+about: 为这个项目提出新功能建议
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## 💡 功能描述
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+清晰简洁地描述你想要的功能。
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## 🎯 问题背景
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+这个功能解决了什么问题？请详细描述。
 
+## 💭 建议的解决方案
 
+描述你想要的解决方案。
+
+## 🔄 替代方案
+
+描述你考虑过的任何替代解决方案或功能。
+
+## 📸 示例或原型
+
+如果可能，提供示例图片、原型或代码片段。
+
+## ✨ 额外信息
+
+添加任何其他关于功能请求的上下文或截图。
+
+## ⚖️ 优先级
+
+- [ ] 高 - 核心功能
+- [ ] 中 - 重要改进
+- [ ] 低 - 可选增强
+
+## 👥 受益用户
+
+这个功能会帮助哪些用户？
+
+- [ ] 所有用户
+- [ ] 开发者
+- [ ] 高级用户
+- [ ] 特定场景用户
