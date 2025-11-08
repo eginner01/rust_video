@@ -1,41 +1,229 @@
-# Rust
+# ============================================
+# Rust 相关
+# ============================================
+# 编译产物
 /target/
 **/*.rs.bk
 *.pdb
 
-# Cargo
-Cargo.lock
+# Cargo.lock (二进制项目建议保留，但这里可以忽略)
+# Cargo.lock
 
-# IDE
-.idea/
+# ============================================
+# Node.js / 前端相关
+# ============================================
+# 依赖
+node_modules/
+frontend/node_modules/
+package-lock.json.bak
+
+# 构建产物
+frontend/dist/
+frontend/.vite/
+templates/dist/
+
+# 缓存
+frontend/.cache/
+.npm
+.eslintcache
+*.tsbuildinfo
+
+# ============================================
+# IDE / 编辑器
+# ============================================
+# VSCode
 .vscode/
+*.code-workspace
+
+# IntelliJ IDEA / WebStorm / RustRover
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim
 *.swp
 *.swo
 *~
-.DS_Store
+.*.swp
 
-# Environment
+# Emacs
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# 操作系统
+# ============================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================
+# 环境变量
+# ============================================
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
 
-# Build
+# ============================================
+# 日志文件
+# ============================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ============================================
+# 测试 / 覆盖率
+# ============================================
+coverage/
+*.lcov
+.nyc_output
+
+# ============================================
+# 临时文件
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.cache
+*.orig
+
+# ============================================
+# 构建 / 发布
+# ============================================
 /dist/
 /build/
-
-# Logs
-*.log
-
-# Debug files
-debug_*.html
-debug_*.json
-
-# Temporary docs
-*_TEMP.md
-*_DRAFT.md
+/out/
 
 # Release packages
 release-package/
 *.zip
 *.tar.gz
 *.7z
+*.rar
 rust_video_parser-v*.zip
+rust_video_parser-v*.tar.gz
+rust_video_parser.tar
+*.deb
+*.rpm
+
+# ============================================
+# Docker
+# ============================================
+# Docker 构建缓存（通常不需要忽略docker-compose.yml和Dockerfile）
+# docker-compose.override.yml
+
+# ============================================
+# 文档相关
+# ============================================
+# 临时文档
+*_TEMP.md
+*_DRAFT.md
+*_TODO.md
+*.draft.md
+NOTES.md
+
+# 调试文件
+debug_*.html
+debug_*.json
+debug_*.txt
+
+# ============================================
+# 项目特定
+# ============================================
+# 旧模板（如果有）
+# templates/index.html.bak
+
+# 测试数据
+test_data/
+*.test.json
+
+# 本地配置
+config.local.*
+
+# 数据库文件（如果有）
+*.db
+*.sqlite
+*.sqlite3
+
+# 证书和密钥（敏感信息）
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+.secrets/
+
+# ============================================
+# CI/CD
+# ============================================
+# GitHub Actions 本地测试
+.github/workflows/*.local.yml
+
+# ============================================
+# 其他
+# ============================================
+# Python（如果有测试脚本）
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.venv/
+venv/
+ENV/
+
+# 备份文件
+*.backup
+*~
+
+# 压缩文件（根据需要调整）
+# *.tar
+# *.gz
+
+# 大文件（根据需要调整）
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.wmv
+
+# macOS specific
+._.DS_Store
+**/.DS_Store
