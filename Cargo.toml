@@ -10,60 +10,45 @@ name = "rust_video_parser"
 path = "src/main.rs"
 
 [dependencies]
-# Web framework
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
 
-# HTTP client
 reqwest = { version = "0.11", features = ["json", "cookies"] }
 
-# Async trait support
 async-trait = "0.1"
 
-# URL parsing
 url = "2.5"
 
-# JSON parsing
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# HTML parsing
 scraper = "0.18"
 
-# Regular expressions
 regex = "1.10"
 
-# Async utilities
 futures = "0.3"
 
-# Error handling
 anyhow = "1.0"
 thiserror = "1.0"
 
-# Logging
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
-# Environment variables
 dotenvy = "0.15"
 
-# CLI argument parsing
 clap = { version = "4.4", features = ["derive"] }
 
-# Random generation
 rand = "0.8"
 
-# Date and time
 chrono = "0.4"
 
 [build-dependencies]
-# Windows 资源配置（图标等）
 winres = "0.1"
 
 [profile.release]
 opt-level = 3
 lto = true
 codegen-units = 1
-strip = true  # 移除调试符号，减小文件体积
+strip = true
