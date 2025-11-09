@@ -351,7 +351,7 @@ import { ref, computed } from 'vue'
 import { useAppStore, type ImgInfo } from '@/stores/app'
 import { useThemeStore } from '@/stores/theme'
 import { useToast } from '@/composables/useToast'
-import { downloadFile, generateSafeFilename, getFileExtension } from '@/utils/download'
+import { downloadFile, getFileExtension } from '@/utils/download'
 
 const appStore = useAppStore()
 const themeStore = useThemeStore()
@@ -409,7 +409,7 @@ async function downloadVideo() {
     showToast('准备下载视频...', 'info')
     
     const extension = getFileExtension(result.value.video_url)
-    const filename = generateSafeFilename(result.value.title || 'video', extension)
+    const filename = `video.${extension}`
     
     await downloadFile(proxyVideoUrl.value, filename)
     

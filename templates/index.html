@@ -2774,7 +2774,7 @@
             result.classList.remove('show');
             
             try {
-                const response = await fetch(`/video/share/url/parse?url=${encodeURIComponent(url)}`);
+                const response = await fetch(`/api/video/share/url/parse?url=${encodeURIComponent(url)}`);
                 const data = await response.json();
                 
                 loading.classList.remove('show');

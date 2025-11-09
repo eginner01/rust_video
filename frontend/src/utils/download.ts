@@ -78,7 +78,7 @@ export async function downloadVideoWithProgress(
   }
   
   // 合并所有chunks
-  const blob = new Blob(chunks)
+  const blob = new Blob(chunks as BlobPart[])
   const objectUrl = URL.createObjectURL(blob)
   
   const link = document.createElement('a')
